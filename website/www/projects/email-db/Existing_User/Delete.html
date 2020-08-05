@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="author" content="Anthony Cohn-Richardby">
+  <title>Home</title>
+  <link href='http://fonts.googleapis.com/css?family=Signika+Negative' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="../style/style.css">
+</head>
+
+<body>
+  <!--Wrapper-->
+  <div id="wrapper">
+  
+  <!--Main header-->
+  <header>
+    <a href="../index.html"><h1>Email Database</h1></a>
+  </header>
+
+  <!--Main Nav-->
+  <nav class="main">
+    <ul>
+      <li><a href="../New_User/New_User.html">New User</a></li>
+      <li><a href="Recover.html">Existing User</a></li>
+	  <li><a href="../../index.html">Return To Projects</a></li>
+    </ul>
+  </nav>
+
+  <!--Sub Nav-->
+  <nav class="sub">
+    <ul>
+      <li><a href="Recover.html">Recover</a></li>
+      <li><a href="Edit.html">Edit</a></li>
+      <li><a href="Delete.html">Delete</a></li>
+    </ul>
+  </nav>
+
+  <!--Article containing the form-->
+  <article>
+    <form action="../php/delete.php" method="post">
+      <table>
+        <tr><td><label>Name</label></td></tr>
+	    <tr><td><input type="text" name="name" id="existingName" maxlength="20" size="20" placeholder="Input a name..." required /></td></tr>
+	    <tr><td><input type="submit" value="Delete" name="submitExName" id="submitExName"/></td></tr>
+      </table>
+    </form>
+  </article>
+
+  <!--Footer-->
+  <footer>
+    <p>Page written by Anthony Cohn-Richardby. Last updated 2014.</p>
+  </footer>
+
+  <!--End Wrapper-->
+  </div>
+</body>

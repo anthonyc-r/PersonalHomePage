@@ -1,0 +1,116 @@
+/**Old browser compatibility**/
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+
+/**Top level cascade**/
+body{
+    background-color: grey;
+	font-family: sans-serif;
+	font-size: 1em;
+	font-weight: 400;
+}
+
+/**Center using wrapper**/
+#wrapper{
+	width: 600px;
+	margin: 0 auto;
+	background-color: white;
+    border-top: 1px solid black;
+    border-left: 1px solid black; 
+    border-right: 1px solid black;
+}
+
+/**Header**/
+header{
+    padding-top: 0px;
+	background-color: rgb(233, 233, 233);
+	font-size: 2em;
+	text-align: center;
+    border-bottom: 1px solid black;
+}
+
+header a{
+	text-decoration: none;
+	color: black;
+}
+
+header h1{
+    padding-top: 10px;
+    margin-top: 0px;
+}
+
+
+/**nav**/
+nav{	
+	text-align: center;
+    background-color: rgb(244, 244, 244);
+	width: 600px;
+	height: 20px;
+    border-bottom: 1px solid black;
+    padding-top: 4px;
+}
+
+nav ul{
+	margin-top: 0px;
+    margin-bottom: 0px;
+	padding: 0px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 70%;
+	list-style-type: none;
+}
+
+nav ul li{
+	display: inline;
+	margin-left: auto;
+	margin-right: auto; 
+	width: 70%;
+}
+
+nav ul li a{
+    text-decoration: none;
+    color: black;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	padding-left: 10px;
+	padding-right: 10px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 70%;
+}
+
+nav ul li a:active{
+    color: grey;/
+}
+
+/**article**/
+article{
+    height: 500px; 	
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+article form{
+	margin-left: auto;
+	margin-right: auto;
+	width: 70%;
+}
+
+article form table, article form table td{
+	margin-left: auto;
+	margin-right: auto;
+	width: 70%;
+}
+
+article form table td{
+	text-align: center;
+}
+
+/**footer**/
+footer{ 
+    text-align: center;
+    font-size: 0.5em;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}

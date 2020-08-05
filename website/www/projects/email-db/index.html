@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="author" content="Anthony Cohn-Richardby">
+  <title>Home</title>
+  <link href='http://fonts.googleapis.com/css?family=Signika+Negative' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="style/style.css">
+</head>
+
+<body>
+  <!--Wrapper-->
+  <div id="wrapper">
+  
+  <!--Main header-->
+  <header>
+    <h1>Email Database</h1>
+  </header>
+
+  <!--Main Nav-->
+  <nav class="main">
+    <ul>
+      <li><a href="New_User/New_User.html">New User</a></li>
+      <li><a href="Existing_User/Recover.html">Existing User</a></li>
+	  <li><a href="../index.html">Return To Projects</a></li>
+    </ul>
+  </nav>
+
+  <!--Article explaining purpose and use + project context-->
+  <article>
+    <p>
+    If you wish to add a new user to the database, click the above link, New User.
+    If you wish to recover an email address, edit a user's name or email, or delete a user's details, click    the 'Existing User' link.
+    </p>
+	<p>
+	This project's aim was to keep a database of email addresses without storing any in plain text, such that any webcrawlers would not be able to retrieve them for malicious use.
+	It made use of HTML, JS, CSS, PHP, MySQL. As part of the assignment we designed our own database schemas with justification. Hence after this assignment we were familiar with setting up and using a LAMP stack. Our knowledge of relational databases was further expanded in the second year, as we learned about normalisation.
+	</p>
+	<p>
+	Security was also considered, ensuring any information used by MySQL was escaped as to prevent SQL injection.
+	</p>
+  </article>
+
+  <!--Footer-->
+  <footer>
+    <p>Page written by Anthony Cohn-Richardby. Last updated 2014.</p>
+  </footer>
+
+  <!--End Wrapper-->
+  </div>
+</body>

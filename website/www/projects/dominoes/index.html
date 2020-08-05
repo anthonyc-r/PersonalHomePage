@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="author" content="Anthony Cohn-Richardby">
+  <title>Home</title>
+  <link rel="stylesheet" type="text/css" href="../../style.css">
+  <link rel="stylesheet" type="text/css" href="prism.css">
+  <script src="prism.js"></script>
+</head>
+
+
+<body>
+<!-- Wrapper -->
+<div id="wrapper">
+
+<!-- main banner + sub banner with page name/summary -->
+  <header>
+  <!-- Nav: Degree info/game/contact page/accessibility page -->
+    <nav>
+    <ul>
+	  <li><a href="../../index.html" accesskey="1">Home</a></li>
+	  <li><a href="../index.html" accesskey="2">Projects</a></li>
+	  <li class="current"><a href="index.html" accesskey="3">Dominoes</a></li>
+	</ul>
+    </nav>
+
+    <h1 id="title">Anthony Cohn-Richardby <br/>Former Student at the University of Sheffield <br/>In Computer Science</h1>
+    <h1 id="subtitle">Dominoes</h1>
+    <p><q>Simplicity is the ultimate sophistication.</q> - Leonardo da Vinci</p>
+  </header>
+  
+  
+<!-- article: List of proj uni and personal -->
+  <article>
+  <!-- intro -->
+  <p>
+  As part of the advanced programming techniques module, we learned about functional programming with Haskell. To test our knowledge we were given the task of modeling the game of dominoes in Haskell, and also programming some computer controlled players. 
+  My dominoes code and players follow
+  </p>
+  <p><noscript>This page uses prism.js for syntax highlighting, however javascript is currently disabled.</noscript></p>
+  <h1>Dominoes.hs</h1><a href="src/Dominoes.hs">source</a>
+  <pre><code class="language-haskell">
+{-Author: Anthony Cohn-Richardby
+--Purpose: To meet the requirements of the specification of Assignment 1 of
+----COM2001.
+--Last Modified: 22/10/14.-}
+
+module Dominoes where
+
+----DATA STRUCTURES----
+type Domino = (Integer, Integer)
+type Board =[Domino]
+type Hand = [Domino]
+--deriving (Show) so it's printed out in scoreN.
+data End = LeftEnd | RightEnd deriving (Show)
+
+----DOMINO FUNCTIONS----
+newDomino :: Integer -> Integer -> Domino
+newDomino a b = (a, b)
+
+rotDomino :: Domino -> Domino
+rotDomino (a, b) = (b, a)
+
+--All the permutations of a <- 0..6, b <- 0..6.
+fullSet :: [Domino]
+fullSet = [(a, b) | a <- [0..6], b <- [0..a]]
+
+----BOARD FUNCTIONS----
+newBoard :: Board
+newBoard = []
+
+----HAND FUNCTIONS----
+newHand :: Hand
+newHand = []
+
+----GAME FUNCTIONS----
+{-goesP
+--Returns:
+---------: True if the domino may be placed at this position, or false.
+--Takes: The domino to, potentially, be played.
+-------: The end of the board to check for success.
+-------: The board on which to check for success.-}
+goesP :: Domino -> End -> Board -> Bool
+--Any domino can be played on the empty board.
+goesP _ _ [] = True                  
+--Compare both sides of played domino against num at end.
+goesP (l, r) LeftEnd (dom:doms)
+    | l == fst dom   = True
+    | r == fst dom   = True
+    | otherwise      = False
+goesP (l, r) RightEnd doms
+    | l == snd (last doms) = True
+    | r == snd (last doms) = True
+    | otherwise            = False
+
+{-knockingP
+--Returns: 
+---------: True if there are no dominoes in the hand that can be played 
+---------: upon the board, or false.
+--Takes:
+-------: A hand of dominoes to be checked.
+-------: The board on which to check for plays.-}
+knockingP :: Hand -> Board -> Bool
+--Can't play with no dominoes.
+knockingP [] _ = True
+--Recursively check doms in hand via goesP.
+--If goesP returns true for LEnd or REnd, can't knock.
+knockingP (dom:doms) board 
+    | goesP dom LeftEnd board      = False
+    | goesP dom RightEnd board     = False
+    | otherwise                    = knockingP doms board 
+
+{-playedP
+--Returns: 
+---------: True if a given domino has been played on a given board, or
+---------: False.
+--Takes: The domino to check.
+-------: The board of dominoes to be checked.-}
+playedP :: Domino -> Board -> Bool
+--Basic case, board is empty thus nothing has been played.
+playedP dom []                  = False
+--Run through the dominoes played.
+--If the domino equals any played(Either way around) returns true.
+playedP dom (bDom:bDoms)
+    | dom == bDom               = True
+    | (rotDomino dom) == bDom   = True
+    | otherwise                 = playedP dom bDoms
+
+{-possPlaysA
+--Returns: 
+---------: The set of dominoes in a hand that may be played on a single
+---------: end of a board, to be used by possPlays.
+--Takes: 
+-------: A hand of dominoes to check for possible plays on a certain end.
+-------: The end of the board that you wish to check.
+-------: The board you wish to check.-}
+possPlaysA :: Hand -> End -> Board -> [Domino]
+--No possible plays if hand is empty.
+possPlaysA [] _ board = []
+--Recursively run though Hand, add element of hand to list if playable.
+possPlaysA (dom:doms) end board =
+    if goesP dom end board
+        then dom:(possPlaysA doms end board)
+        else possPlaysA doms end board
+{-possPlays
+--Returns: 
+---------: All the possible dominoes in a hand, that may be played on a
+---------: given board, in the form of a tuple, the first element contains
+---------: dominoes that may be played on the left, the second contains 
+---------: dominoes that may be played on the right.
+--Takes: 
+-------: The hand to check for possible plays.
+-------: The board being potentially played on. -}
+possPlays :: Hand -> Board -> ([Domino], [Domino])
+possPlays hand board = (possPlaysA hand LeftEnd board, 
+                        possPlaysA hand RightEnd board)
+
+{-playDom
+--Returns: 
+---------: The updated board with the played domino if the play is valid, 
+---------: or Nothing.
+--Takes:
+-------: The domino to be played.
+-------: The end of the board the domino is to be played upon.
+-------: The board on which the domino is being played. -}
+playDom :: Domino -> End -> Board -> Maybe Board
+--No rules as to the first played domino...
+playDom domino _ [] = Just [domino]
+--Split into case of LeftEnd and RightEnd due to differences in operations.
+playDom domino@(a, b) LeftEnd board@(dom:doms)
+    | b == fst dom                 = Just (domino:board)
+    | a == fst dom                 = Just ((rotDomino domino):board)
+    | otherwise                    = Nothing
+playDom domino@(a, b) RightEnd board
+    | a == snd lastDom              = Just (board++[domino])
+    | b == snd lastDom              = Just (board++[(rotDomino domino)])
+    | otherwise                     = Nothing
+        where lastDom = last board
+
+{-scoreBoardA
+--Returns: 
+---------: The value of a specified end of a board according to the rules
+---------: to the rules of 3s and 5s, to be used in scoreBoard.
+--Takes: 
+-------: The board to check an end of.
+-------: The end to get the value of.-}
+scoreBoardA :: Board -> End -> Integer
+scoreBoardA [(a, b)] LeftEnd = a
+scoreBoardA [(a, b)] RightEnd = b
+scoreBoardA ((a, b):doms) LeftEnd = if a == b then 2*a else a
+scoreBoardA board RightEnd = let (a, b) = (last board) 
+                             in if a == b then 2*b else b
+{-scoreBoard
+--Returns: 
+---------: The 3s and 5s score for a certain board of dominoes.
+--Takes: 
+-------: The board of dominoes to check.-}
+scoreBoard :: Board -> Integer
+scoreBoard board
+--Infix (quot) to do integer division to convert a value to a score.
+    | totalScore `mod` 15 == 0 = (totalScore `quot` 5)+(totalScore `quot` 3)
+    | totalScore `mod` 5 == 0  = totalScore `quot` 5
+    | totalScore `mod` 3 == 0  = totalScore `quot` 3
+    | otherwise                = 0
+        where leftScore  = (scoreBoardA board LeftEnd)
+              rightScore = (scoreBoardA board RightEnd)
+              totalScore = leftScore+rightScore
+
+{-scoreNA
+--Returns: 
+---------: A subset of the given domino list that when played at a given 
+---------: end, results in the given score target. Intended to be used by
+---------: the full scoreN function.
+--Takes:
+-------: A list of dominoes to check for validity.
+-------: The end which the dominoes are to be checked against.
+-------: The board on which to check.
+-------: The target score to make.-}
+scoreNA :: [Domino] -> End -> Board -> Integer -> [Domino]
+--Basic case
+scoreNA [] end board tar = []
+scoreNA (dom:doms) end board tar
+--Check the score of the resulting board recursively over the list of 
+----dominoes, if it's the target, add to return list.
+    | scoreBoard newBoard == tar = dom : (scoreNA doms end board tar)
+    | otherwise                  = scoreNA doms end board tar
+        where Just newBoard = playDom dom end board 
+
+{-scoreN
+--Returns: 
+---------: A subset of the standard set of dominoes such that when played 
+---------: on a given board, results in a new board that would score the 
+---------: given target. Returns each domino in a tuple with the end that 
+---------: it may be played on.
+--Takes:
+-------: The board on which the tile is to be placed.
+-------: The target score that is to be made.-}
+scoreN :: Board -> Integer -> [(Domino, End)]
+--Zip the results from the aux function with the End to be played on and
+----append for a single output
+scoreN board tar = (zip tarLeft leftCycle) ++
+                    (zip tarRight rightCycle)
+--Generate the set of valid unplayed tiles (fullSet defined under 
+----DOMINO FUNCTIONS) and run it though possPlays ready to be passed
+----to the aux function
+        where notPlayed  = [notPlayed | notPlayed <- fullSet, 
+                                        not (playedP notPlayed board)]
+              playable   = possPlays notPlayed board -- ([left], [right])
+              left       = fst playable              -- [left]
+              right      = snd playable              -- [right]
+              tarLeft    = scoreNA left LeftEnd board tar
+              tarRight   = scoreNA right RightEnd board tar
+              leftCycle  = cycle [LeftEnd]
+              rightCycle = cycle [RightEnd]
+  </code></pre>
+  <h1>DomGame.hs</h1><a href="src/DomGame.hs">source</a>
+  <pre><code class="language-haskell">
+{-Author: Anthony Cohn-Richardby
+--Purpose: Meet the requirements for COM2001 Assignment 2
+--Last Modified: 23/11/14-}
+module DomGame where
+
+import Dominoes
+import System.Random
+import Data.List
+
+type DomsPlayer = Hand -> Board -> (Domino, End)
+
+--Integer types used throughout to maintain compatibility with Dominoes.hs
+----which also uses ints for returns and such, with the exception of seeds.
+type Score = (Integer, String)
+
+{-shuffDoms
+--Returns:
+---------: The list of all valid dominoes in a random order.
+--Takes:
+-------: A random number generator.-}
+shuffleDoms :: StdGen -> [Domino]
+shuffleDoms gen = let ints    = take 28 (randoms gen)::[Int]
+                      domZip  = zip ints fullSet
+                      domSort = sortBy (\(i1, d1) (i2, d2) -> compare i1 i2)
+                                    domZip in
+                  snd (unzip domSort)
+
+{-playDomsRoundA
+--Returns:
+---------: The final score of a game between two given players, only to
+---------: be used by playDomsRound
+--Takes: Two DomsPlayers to play each other
+-------: Two hands, one for each player
+-------: The game board to play upon
+-------: A tupple of each player's current scores.
+--Notes:
+-------: Updates game data if the player can play and calls itself with the
+-------: next player's hand and player in the first positions for each. If
+-------: the player cannot go, the above is done without updated data. If
+-------: both players are knocking, the game ends and the function returns.-}
+playDomsRoundA :: DomsPlayer -> DomsPlayer -> Hand -> Hand-> Board 
+                    -> (Score, Score) -> (Score, Score) 
+--Cases redundant due to knocking check, including to be safe...
+playDomsRoundA pA pB [] [] b (sA, sB) = (sA, sB)
+playDomsRoundA pA pB [] hB b (sA, sB) = playDomsRoundA pB pA hB [] b (sB, sA)
+playDomsRoundA pA pB hA hB b (sA@(s, a), sB) 
+    | not (knockingP hA b) = playDomsRoundA pB pA hB hA' b' (sB, sA')
+    | not (knockingP hB b) = playDomsRoundA pB pA hB hA b (sB, sA)
+    | otherwise            = (sA, sB)
+--Updated values...
+        where (drop, end) = pA hA b
+              hA'         = delete drop hA
+              Just b'     = playDom drop end b
+              sA'         = (s + (scoreBoard b'), a)
+                                        
+{-playDomsRound
+--Returns:
+---------: The final score after conducting a round of dominoes between
+---------: the two players.
+--Takes:
+-------: Two DomsPlayers to face each other, Player A and Player B.
+-------: An Int seed to determine the shuffle order.
+--Notes: The scores are tagged with A or B as their return order is
+-------: not constant.-}
+playDomsRound :: DomsPlayer -> DomsPlayer -> Int -> (Score, Score)
+playDomsRound pA pB seed = let hX = shuffleDoms (mkStdGen seed)
+                               (hA, hB) = splitAt 14 hX
+                               b = newBoard in
+                           playDomsRoundA pA pB hA hB b ((0, "A"), (0, "B"))
+
+{-simplePlayer
+--Notes:
+-------: Returns the first playable domino in hand.-}
+simplePlayer :: DomsPlayer
+simplePlayer h b
+--Only called if both lists aren't empty so...
+    | lps == [] = (head rps, RightEnd)
+    | rps == [] = (head lps, LeftEnd)
+    | otherwise = (head rps, RightEnd)
+        where (lps, rps) = possPlays h b
+ 
+{-domScores
+--Returns: 
+---------: A tupple of the given dominoes and their scores when played upon
+---------: a given side of a board.
+--Takes: 
+-------: A list of dominoes that are known to be playable on the specified
+-------: side.
+-------: The end of the board to play the dominoes.
+-------: The board to play upon.-}
+domScores :: [Domino] -> End -> Board -> [(Domino, Integer)]
+domScores [] end b = []
+domScores (d:ds) end b  = let Just b' = playDom d end b in
+                          (d, scoreBoard b'):(domScores ds end b)  
+
+{-hsdPlayer
+--Notes: Returns the highest scoring playable domino.-}
+hsdPlayer :: DomsPlayer
+hsdPlayer h b
+    | sLS == []                       = (fst (head sRS), RightEnd)
+    | sRS == []                       = (fst (head sLS), LeftEnd)
+    | snd (head sLS) > snd (head sRS) = (fst (head sLS), LeftEnd)
+    | otherwise                       = (fst (head sRS), RightEnd)
+        where (lps, rps) = possPlays h b
+			   --Get the scores for every play
+              (scL, scR) = (domScores lps LeftEnd b,
+                                domScores rps RightEnd b)
+			   --Ensure highest scoring is first in the list
+              (sLS, sRS) = (sortBy 
+                                (\(d1, s1) (d2, s2) -> compare s2 s1) scL,
+                            sortBy 
+                                (\(d1, s1) (d2, s2) -> compare s2 s1) scR)
+  </code></pre>
+  <h1>DomsPlayer.hs</h1><a href="src/DomsPlayer.hs">source</a>
+  <pre><code class="language-haskell">
+{-Author: Anthony Cohn-Richardby
+--Purpose: Meet the requirements for COM2001 Assignment 3-}
+module DomsPlayer where
+
+import DomsMatch
+import Data.List
+import Data.Tuple
+
+type Tactic = Player -> Hand->DomBoard->Scores->(Dom, End)
+type Strategy = Hand -> DomBoard -> Player -> Scores -> Tactic
+
+--Returns opponent's hand
+getOpponentHand :: Hand -> History -> Hand
+getOpponentHand ha hi = [x | x <- domSet, (not (x `elem` (played++ha)))]
+    where 
+        (played, players, moveNums) = (unzip3 hi)
+        
+        
+--PLAYERS
+winPlayer :: DomsPlayer
+winPlayer h b p s
+    | canWin h b pScore = winGame p h b s
+    | otherwise = playHsd p h b s
+        where 
+            (pScore, oScore) = if p == P1 then s else swap s 
+
+
+winBlockPlayer :: DomsPlayer
+winBlockPlayer h b p s
+    | canWin h b pScore = winGame p h b s
+    | opCanWin h b oScore = blockWin p h b s --No point checking at less
+    | otherwise = playHsd p h b s
+        where
+            (pScore, oScore) = if p == P1 then s else swap s
+
+winBlockHrdPlayer :: DomsPlayer
+winBlockHrdPlayer h InitBoard p s = playHrd p h InitBoard s
+winBlockHrdPlayer h b p s
+    | canWin h b pScore = winGame p h b s
+    | opCanWin h b oScore = blockWin p h b s--As above
+    --If the opponent is more than 10 points ahead of me
+    --try and play one that forces opponent to play a lower scoring value
+    | (oScore - pScore) > 10 = playHrd p h b s
+    | otherwise = playHsd p h b s
+        where
+            (pScore, oScore) = if p == P1 then s else swap s
+ 
+blockOpPlayer :: DomsPlayer
+blockOpPlayer h b p s
+    | canWin h b pScore = winGame p h b s 
+    | opCanWin h b oScore = blockWin p h b s
+    | canBlock h b = blockOp p h b s
+    | otherwise = playHsd p h b s
+        where
+            (pScore, oScore) = if p == P1 then s else swap s
+
+-----SITUATIONAL TEST PREDICATES-----
+{-canWin
+--Returns:
+---------: True if in the next round it is possible to win, or false.
+--Takes: The player's hand of dominos.
+-------: The current domino game board.
+-------: The player's current score.-}
+canWin :: Hand -> DomBoard -> Int -> Bool
+canWin _ InitBoard _ = False --Can't win on your first go
+canWin [] b s = False
+canWin (d:doms) b s
+    | (goesLP d b) && ((scoreDom d L b + s)== 61) = True
+    | (goesRP d b) && ((scoreDom d R b + s)== 61) = True
+    | otherwise = canWin doms b s
+opCanWin :: Hand -> DomBoard -> Int -> Bool
+opCanWin _ InitBoard _ = False--Above
+opCanWin [] b os = False
+opCanWin h b@(Board _  _ hi) os =
+    let
+        oh = getOpponentHand h hi
+    in
+        canWin oh b os
+{-canBlock
+--Returns:
+---------: True if it is possible for the player to play a domino such that the opponent must knock.
+--Takes: The player's hand of dominos.
+-------: The current domino game board.-}    
+canBlock :: Hand -> DomBoard -> Bool
+canBlock h InitBoard = False
+canBlock h b@(Board _ _ his)
+    --make sure they can't play both sides, we can only block one!
+    | ((rightdrops oh b) /= []) && ((leftdrops oh b) /= []) = False  
+    | (rightdrops oh b) == [] = canBlockA h oh b L -- he can only `play on the left, check it!
+    | (leftdrops oh b) == [] = canBlockA h oh b R
+    | otherwise = False
+        where 
+            oh = getOpponentHand h his 
+            lb = leftdrops h b
+            rb = rightdrops h b
+--Check if the player can block the opponent
+canBlockA :: Hand -> Hand -> DomBoard -> End -> Bool
+canBlockA [] _ _ _ = False
+canBlockA (d:doms) oh b e
+    | knocking oh pb = True
+    | otherwise = canBlockA doms oh b e
+        where 
+            Just pb = playDom P1 d e b   -- Player doesn't matter
+            
+
+-----TACTICS-----
+{-playHsd
+--Notes: Chooses the highest scoring playable domino.-}
+playHsd :: Tactic
+playHsd _ h b _ 
+    | sLS == []                       = (fst (head sRS), R) --If no left plays pick the first in the ordered right list
+    | sRS == []                       = (fst (head sLS), L) --As above
+    | snd (head sLS) > snd (head sRS) = (fst (head sLS), L) --Else compare the highest scoring left and right
+    | otherwise                       = (fst (head sRS), R)
+        where
+            (lps, rps) = (leftdrops h b, rightdrops h b)
+            --Get the scores for every play
+            (scL, scR) = (map (\d->(d, scoreDom d L b)) lps,
+                            map (\d->(d, scoreDom d R b)) rps)
+            --Ensure highest scoring is first in the list
+            (sLS, sRS) = (sortBy 
+                            (\(d1, s1) (d2, s2) -> compare s2 s1) scL,
+                          sortBy 
+                            (\(d1, s1) (d2, s2) -> compare s2 s1) scR)
+
+{-winGame
+--Notes: Chooses the game-winning domino. Only to be used if canWin returns True.-}
+winGame :: Tactic
+winGame p (d:doms) b s
+    --If the domino goes and playing it results in a winning score choose it
+    | (goesLP d b) && (((scoreDom d L b) + pScore)== 61) = (d, L)
+    | (goesRP d b) && (((scoreDom d R b) + pScore)== 61) = (d, R)
+    | otherwise = winGame p doms b s
+        where 
+            (pScore, oScore) = if p == P1 then s else swap s
+        
+{-blockOp
+--Notes: Chooses the domino that forces the opponent to knock on their turn. Only to be used if canBlock returns True.-}
+blockOp :: Tactic
+--Don't try and block if first drop
+blockOp p h InitBoard s = playHsd p h InitBoard s
+blockOp p h b@(Board _ _ his) s
+    | (rightdrops oh b) == [] = blockOpA h oh b L -- he can play on the left, check it!
+    | (leftdrops oh b) == [] = blockOpA h oh b R
+        where 
+            oh = getOpponentHand h his 
+            lb = leftdrops h b
+            rb = rightdrops h b
+blockOpA :: Hand -> Hand -> DomBoard -> End -> (Dom, End)
+blockOpA (d:doms) oh b e
+    | knocking oh plb = (d, e)
+    | otherwise = blockOpA doms oh b e
+        where 
+            Just plb = playDom P1 d e b   -- Player doesn't matter
+
+           
+                            
+                            
+{-playHrd
+--Notes: Chooses the domino such that the ratio of (my score)/(opponents highest score on their turn) is highest.-}
+playHrd :: Tactic
+playHrd p h InitBoard s = playHsd p h InitBoard s 
+playHrd _ h b@(Board _ _ hi) _
+    | lsort == [] = (ttfst (head rsort), ttsnd (head rsort))
+    | rsort == [] = (ttfst (head lsort), ttsnd (head lsort))
+    | (ttthrd (head rsort)) > (ttthrd (head lsort)) = (ttfst (head rsort), ttsnd (head rsort))
+    | otherwise = (ttfst (head lsort), ttsnd (head lsort))
+    where
+        oh = getOpponentHand h hi
+        (ld, rd) = (leftdrops h b, rightdrops h b)
+        (ls, rs) = (playHrdA ld oh b L, playHrdA rd oh b R)
+        (lsort, rsort) = (sortBy (\(d1, e1, s1) (d2, e2, s2) -> compare s2 s1) ls,
+                            sortBy (\(d1, e1, s1) (d2, e2, s2) -> compare s2 s1) rs)
+playHrdA :: Hand -> Hand -> DomBoard -> End -> [(Dom, End, Float)]
+playHrdA [] _ _ _ = []
+--Not all of the opponent's hand may be playable OR Non may be playable!
+playHrdA (d:doms) oh b@(Board _ _ hi) e 
+    | olds == [] && ords == [] = (d, e, (myScore/0.5)):(playHrdA doms oh b e) --Opponent cannot play from this domino, the domino is worth more
+    | olds == [] = (d, e, (myScore/orScore)):(playHrdA doms oh b e)--Opponent can only play on the right
+    | otherwise = (d, e, (myScore/olScore)):(playHrdA doms oh b e)--Opponent can only play on the left
+        where
+            Just pb = playDom P1 d e b --It will go, player doesn't matter
+            (olds, ords) = (leftdrops oh pb, rightdrops oh pb)
+            (lhsds, rhsds) = (getHsdAndScore olds pb, getHsdAndScore ords pb)
+            myScore = fromIntegral(scoreDom d e b)
+            (olScore, orScore) = (fromIntegral(snd(lhsds)), fromIntegral(snd(rhsds)))        
+
+--Returns the highest scoring domino, but as a tuple together with it's score                            
+getHsdAndScore :: Hand -> DomBoard -> (Dom, Int)
+getHsdAndScore h b 
+    | sLS == []                       = (fst (head sRS), snd (head sRS))
+    | sRS == []                       = (fst (head sLS), snd (head sLS))
+    | snd (head sLS) > snd (head sRS) = (fst (head sLS), snd (head sLS))
+    | otherwise                       = (fst (head sRS), snd (head sRS))
+        where 
+            --Get the scores for every play
+            (lps, rps) = (leftdrops h b, rightdrops h b)
+            (scL, scR) = (map (\d->(d, (scoreDom d L b))) lps,
+                            map (\d->(d, (scoreDom d R b))) rps)
+            (sLS, sRS) = (sortBy (\(d1, s1) (d2, s2) -> compare s2 s1) scL,
+                            sortBy (\(d1, s1) (d2, s2) -> compare s2 s1) scR)
+                            
+
+{-blockWin
+--Notes: Chooses the highest scoring domino such that on the next round the opponent cannot win. Or if this is not possible, the highest scoring domino-}                            
+blockWin :: Tactic
+blockWin p h InitBoard s = playHsd p h InitBoard s --Shouldn't be called at the start of the game
+blockWin p h b@(Board _ _ hi) s
+    | nonLosingL++nonLosingR == [] = playHsd p h b s
+    | otherwise = playHsd p (nonLosingL++nonLosingR) b s
+        where 
+            (pScore, oScore) = if p == P1 then s else swap s
+            oh = getOpponentHand h hi
+            (lds, rds) = (leftdrops h b, rightdrops h b)
+            nonLosingL = [x | x <- lds, (not (canWin oh (playleft p x b) oScore))] --playleft/right doesn't return 'maybe'
+            nonLosingR = [x | x <- rds, (not (canWin oh (playright p x b) oScore))]
+                                
+
+--Three-tuple functions
+ttthrd :: (a, b, c) -> c
+ttthrd (_, _, c) = c
+ttfst ::(a, b, c) -> a
+ttfst (a, _, _) = a
+ttsnd ::(a, b, c) -> b
+ttsnd (_, b, _) = b           
+  </code></pre>
+  </article>
+
+ 
+<!--/wrapper-->
+</div>
+<!--footer: author/last updated-->
+<footer>
+    <p>Written and designed by Anthony Cohn-Richardby. Last updated 2016.</p>
+</footer>
+ 
+</body>
+
+
+</html>

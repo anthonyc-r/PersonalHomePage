@@ -1,0 +1,215 @@
+/*Designate all new html5 tags to display as block elements for compatibility*/
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+
+/*********************************************************************/
+/*****General styles I want to cascade down to all other elements*****/
+/*********************************************************************/
+body {
+	font-size: 1em;
+	background-color: #C0E4FF; /*pale blue*/
+	font-family: 'Signika Negative';
+	font-weight: 400;
+}
+
+/*****Centre everything in the body*****/
+#wrapper {
+  width: 900px;
+  height: auto;
+  min-height: 1458px;
+  margin: 0 auto;
+  margin-top: 40px;
+  background-color: #FFFF78;
+}
+
+/******************************************************************************/
+/*****The following styles apply to all elements within the HEADER element*****/
+/******************************************************************************/
+/*General header styling*/
+header {
+  width: 900px;
+  height: 558px;
+	background-color: #558BB2;
+  /*background-color: #96D3FF;*/
+	font-size: 2em;
+	/*border-bottom: 2px solid;*/
+}
+
+/*Styling for the title and subtitle*/
+header #title{
+	padding: 10px 0px 0px 10px;
+	font-size: 0.5em;
+	margin: 0px;
+}
+header #subtitle{
+	margin: 0px;
+	padding-left: 60px;
+	/*Make the subtitles slide across initially*/
+	animation: slide 2s;
+}
+
+/*quote: Should be in it's own box, but overlaps into nav. Ideally needs changing.*/
+header p {
+  margin: 0 auto;
+  padding: 50px 0 50px 0;
+  width: 95%;
+  font-size: 0.75em;
+}
+header p q {
+  padding: 50px 20px 50px 20px;
+}
+
+/***************************************************************************/
+/*****The following styles apply to all elements within the NAV element*****/
+/***************************************************************************/
+/*General nav bar styling*/
+nav{
+	background-color: #FF8785;
+/*Display the nav bar along the side instead of horizontally*/
+	float: right;
+	width: 344px;
+	height: 558px;
+	/*border-right: 2px solid; contrasting colours == border */
+}
+
+/*Remove the unordered list bullet points*/
+nav ul{
+	margin: 0px;
+	list-style-type: none;
+	padding-left: 0px;
+	
+}
+
+/*Collapse to remove double thick lines in places and smooth transition to li:hover
+	when the mouse is hovered over the element*/
+nav ul li{
+	-webkit-transition: all 1s;
+	transition: all 0.75s;
+}
+
+/*Change the background color when the mouse is hovered over the element*/
+nav li:hover{
+	background-color: #FFC1C0;
+}
+
+/*Used for setting the background of the current page's list element to the hover color*/
+nav ul li.current{
+	background-color: #FFC1C0;
+	right: 2px;
+}
+
+/*Change how the text links are formatted in the nav bar*/
+nav ul li a{
+/*Display the links as block elements so I can click anywhere within a specified box to follow a link
+	rather than just the text*/
+	display: block;
+/*Padding to centre the text*/
+	/*padding-top: 30px;	
+	margin-left: 2px;
+	height: 60px;*/
+/*Width is set to the same as the width of the nav bar so you can click anywhere in the boxes
+	to follow a link*/
+	width: 344px;
+/*Remove any underlining and special styling links usually have*/
+	text-decoration: none;
+	color: black;
+}
+
+/**************************************************************************/
+/*****The following rules apply to elements within the ARTICLE element*****/
+/**************************************************************************/
+/*General styling of the main substance of every page*/
+article{
+	height: auto;
+  width: 820px;
+	padding: 40px 40px 40px 40px;
+}
+/*Special rules for images*/
+article img{
+/*Display it on the right hand side of the screen*/
+	float: right;
+/*Smother transition to :hover*/
+	-webkit-transition: all 1s;
+	transition: all 1s;
+  /*So text doesn't push right up to it.*/
+  padding: 5px;
+}
+
+/*Add a shadow and scale the image to make it look like it's coming out of the page 
+	when the mouse is hovered over it*/
+article img:hover{
+  /*Looks kind of terrible to be honest...
+	box-shadow: 10px 10px rgba(0,0,0,0.2);
+	-webkit-transform: scale(1.1);
+	transform: scale(1.1);
+  */
+}
+
+/*Remove annoying margins :(*/
+article h3{
+	margin: 0px;
+}
+article h2{
+	margin: 0px;
+}
+
+/*Stop links from displaying on a new line*/
+article a{
+	display: inline;
+}
+
+/*Table styling*/
+article table, article th, article th, article td{
+	border: 1px solid black;
+/*Stop borders from being displayed as double lines*/
+	border-collapse: collapse;
+	text-align: left;
+}
+
+/*Make all paragraphs of the 'small' class, display in a smaller font*/
+article p.small{
+	font-size: 0.75em;
+}
+
+/*****************************************************************************/
+/*****The following rules apply to all elements within the FOOTER element*****/
+/*****************************************************************************/
+/*General rules*/
+footer{
+	font-family: sans-serif;
+	font-size: 0.75em;
+	height: 18px;
+	padding: 0px;
+  position: relative;
+  bottom: 0;
+}
+
+footer p{
+	margin: 0px;
+}
+
+/****************************/
+/*****MISCILANEOUS RULES*****/ 
+/****************************/
+/*Give media elements a border and center them*/
+canvas, video{
+	background-color: white;
+	border: solid 5px #C0E4FF;
+    /*Centre the canvas element within the article division*/
+	display: block;
+	margin: 0 auto;
+}
+
+
+/********************/
+/*****ANIMATIONS*****/ 
+/********************/
+
+/*******************/
+/*******FONTS*******/ 
+/*******************/
+@font-face {
+	font-family: 'Signika Negative';
+	src: url('./SignikaNegative-Regular.ttf');
+}

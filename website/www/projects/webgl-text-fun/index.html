@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>WebGL stuff</title>
+	<!--<script src="glMatrix-0.9.5.min.js"></script>-->
+	<link rel="stylesheet" type="text/css" href="style.css"></link>
+	<script src="gl-matrix.js"></script>
+	<script src="glex.js"></script>
+	<script src="terminal.js"></script>
+	<script src="quad.js"></script>
+	<script src="font-atlas.js"></script>
+	<script src="main.js"></script>
+</head>
+<script id="shader-fs" type="x-shader/x-fragment">
+    precision mediump float;
+	
+	uniform bool LightingEnabled;
+	uniform bool TextureEnabled;
+	
+	uniform vec3 MaterialColor;
+	uniform vec3 AmbientColor;
+	uniform vec3 LightColor;
+	uniform vec3 LightPosition;
+	uniform vec3 LightDirection;
+	
+	uniform sampler2D TextureSampler;
+	
+	varying highp vec3 TexCoord;
+	varying vec3 Normal;
+	varying vec4 Position;
+	varying vec3 FixedPosition;
+
+    void main(void) {
+
+		vec4 rgba;
+		if (LightingEnabled) {
+			vec3 position = Position.xyz;
+			vec4 color = vec4(MaterialColor, 1.0);
+			//Get color from texture
+			if(TextureEnabled) {
+				color = texture2D(TextureSampler, vec2(TexCoord.s, TexCoord.t));
+				color.rgb = vec3(1.0, 0.0, 0.0);
+			}
+			//Normalise
+			vec3 lightDirection = normalize(LightPosition - position);
+			vec3 scatteredLight = AmbientColor + 50.0 * LightColor * max(dot(Normal, lightDirection), 0.0);
+			
+			vec3 rgb = min((color.rgb * scatteredLight), vec3(1.0));
+			rgba = vec4(rgb, color.a);
+		}
+		else {
+			rgba = vec4(MaterialColor, 1.0);
+		}
+		rgba.g = rgba.g + 0.25;
+		
+		
+		gl_FragColor = rgba;
+    }
+</script>
+<script id="shader-vs" type="x-shader/x-vertex">
+    attribute vec3 VertexPosition;
+	attribute vec3 VertexNormal;
+	attribute vec2 TextureCoordinate;
+
+	uniform mat4 MVMatrix;
+	uniform mat4 PMatrix;
+
+    uniform mat3 NormalMatrix;	//Just the pre perspective MV matrix in this case
+	uniform mat3 TextureMatrix;
+	uniform int time;
+	
+	varying highp vec3 TexCoord;
+	varying vec3 Normal;
+    varying vec4 Position;
+	varying vec3 FixedPosition;
+	varying float fragTime;
+	
+    void main(void) {
+		
+		TexCoord = vec3(TextureMatrix[0][2]+TextureCoordinate[0], TextureMatrix[1][2]+TextureCoordinate[1], 1.0);//* vec3(TextureCoordinate, 1.0);
+		Normal = NormalMatrix * VertexNormal;
+		Position = MVMatrix * vec4(VertexPosition, 1.0);
+		FixedPosition = VertexPosition;
+		
+		vec4 MVVert = MVMatrix * vec4(VertexPosition, 1.0);
+		MVVert.z = MVVert.z + 1.5*sin((float(time)/100.0 + MVVert.x/10.0) * 10.0);
+		MVVert.z = MVVert.z + 1.5*sin((float(time)/100.0 + MVVert.y/10.0) * 20.0);
+        gl_Position = PMatrix * MVVert;
+    }
+</script>
+
+<body onload="start();">
+	<noscript>
+	  <h1>Page requires Javascript enabled and WebGL support</h1>
+	  <h1><a href="../index.html">Back to projects...</a></h1>
+	</noscript>
+	<canvas id="canvas" width="800" height="600"></canvas>
+</body>
+</html>

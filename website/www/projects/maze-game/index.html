@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="author" content="Anthony Cohn-Richardby">
+  <title>Home</title>
+  <link rel="stylesheet" type="text/css" href="../../style.css">
+  <script src="gl-matrix.js"></script>
+  <script src="glex.js"></script>
+  <script src="shapes.js"></script>
+  <script src="input.js"></script>
+  <script src="marble.js"></script>
+  <script src="board.js"></script>
+  <script src="main.js"></script>
+</head>
+
+
+<body onload="start()">
+<!-- Wrapper -->
+<div id="wrapper">
+
+<!-- main banner + sub banner with page name/summary -->
+  <header>
+  <!-- Nav: Degree info/game/contact page/accessibility page -->
+    <nav>
+    <ul>
+	  <li><a href="../../index.html" accesskey="1">Home</a></li>
+	  <li><a href="../index.html" accesskey="2">Projects</a></li>
+	  <li class="current"><a href="index.html" accesskey="3">Maze Game</a></li>
+	</ul>
+    </nav>
+	
+    <h1 id="title">Anthony Cohn-Richardby <br/>Former Student at the University of Sheffield <br/>In Computer Science</h1>
+    <h1 id="subtitle">Projects</h1>
+    <p><q>Simplicity is the ultimate sophistication.</q> - Leonardo da Vinci</p>
+  </header>
+  
+  
+<!-- article: game -->
+  <article>
+    <p>
+	This is a little game I made to check out WebGL, and it was a lot of fun to make. Playing with OpenGL in an interpreted language was neat, as you can make a little change and instantly refresh your web browser to see it's effect.
+	The game requires WebGL support from your GPU, modern computers will almost definitely be supported.
+	</p>
+	<p>
+	Use the Arrow Keys to tilt the maze so the marble reaches the red block. All levels are procedurally generated, ensuring there is a path to the goal. Completing a level increases the size of the maze.
+	You can also drag with the mouse to change your perspective in a not-very-useful way, but I left this in because it was kind of cool to do on larger mazes.
+	</p>
+	<p><noscript>This game relies on javascript and it seems you have javascript disabled.</noscript></p>
+	<canvas id="canvas" width="600" height="400"></canvas>
+  </article>
+
+ 
+<!--/wrapper-->
+</div>
+<!--footer: author/last updated-->
+<footer>
+    <p>Written and designed by Anthony Cohn-Richardby. Last updated 2016.</p>
+</footer>
+ 
+</body>
+
+<script id="shader-fs" type="x-shader/x-fragment">
+    precision mediump float;
+	
+	uniform bool LightingEnabled;
+	
+	uniform vec3 MaterialColor;
+	uniform vec3 AmbientColor;
+	uniform vec3 LightColor;
+	uniform vec3 LightPosition;
+	uniform vec3 LightDirection;
+	
+	varying vec3 Normal;
+	varying vec4 Position;
+	varying vec3 FixedPosition;
+
+    void main(void) {
+
+		vec4 rgba;
+		if (LightingEnabled) {
+			vec3 position = Position.xyz;
+			//wood
+			float yrot = 2.75;
+			float zrot = 1.55;
+			mat3 woodRotationY = mat3(cos(yrot), 0.0, sin(yrot),
+									 0.0, 1.0, 0.0,
+									 -sin(yrot), 0.0, cos(yrot));
+			mat3 woodRotationZ = mat3(cos(zrot), -sin(zrot), 0.0,
+									  sin(zrot), cos(zrot), 0.0,
+									  0.0, 0.0, 1.0);
+			vec3 rotatedPos = woodRotationY*woodRotationZ*FixedPosition;
+			//vec3 rotatedPos = Position;
+			vec3 woodColor;
+			float ringsFreq = 20.0;
+			float ringWidth = 0.4; 
+			float ring = abs(cos(ringsFreq*length(vec3(0, rotatedPos.y, rotatedPos.z))));
+			if (ring > ringWidth) {
+				woodColor = vec3(0.714, 0.608, 0.298);
+			}
+			else {
+				woodColor = vec3(0.51, 0.322, 0.004);
+			}
+			//Normalise
+			vec3 lightDirection = normalize(LightPosition - position);
+			vec3 scatteredLight = AmbientColor + 50.0 * LightColor * max(dot(Normal, lightDirection), 0.0);
+			
+			vec3 rgb = min((woodColor * scatteredLight), vec3(1.0));
+			rgba = vec4(rgb, 1.0);
+		}
+		else {
+			rgba = vec4(MaterialColor, 1.0);
+		}
+
+		gl_FragColor = rgba;
+    }
+</script>
+<script id="shader-vs" type="x-shader/x-vertex">
+    attribute vec3 VertexPosition;
+	attribute vec3 VertexNormal;
+
+	uniform mat4 MVMatrix;
+    uniform mat4 MVPMatrix;
+    uniform mat3 NormalMatrix;	//Just the pre perspective MV matrix in this case
+	uniform int time;
+	
+	varying vec3 Normal;
+    varying vec4 Position;
+	varying vec3 FixedPosition;
+	varying float fragTime;
+	
+    void main(void) {
+		Normal = NormalMatrix * VertexNormal;
+		Position = MVMatrix * vec4(VertexPosition, 1.0);
+		FixedPosition = VertexPosition;
+
+        gl_Position = MVPMatrix * vec4(VertexPosition, 1.0);
+    }
+</script>
+</html>

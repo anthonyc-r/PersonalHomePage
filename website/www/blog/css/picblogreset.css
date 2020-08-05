@@ -1,0 +1,58 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+   Edited in sass and compiled to css by A. cohn-richardby in order to 
+   only apply to the picblog division.
+*/
+#picblog {
+  /* HTML5 display-role reset for older browsers */
+}
+
+#picblog html, #picblog body, #picblog div, #picblog span, #picblog applet, #picblog object, #picblog iframe,
+  #picblog h1, #picblog h2, #picblog h3, #picblog h4, #picblog h5, #picblog h6, #picblog p, #picblog blockquote, #picblog pre,
+  #picblog a, #picblog abbr, #picblog acronym, #picblog address, #picblog big, #picblog cite, #picblog code,
+  #picblog del, #picblog dfn, #picblog em, #picblog img, #picblog ins, #picblog kbd, #picblog q, #picblog s, #picblog samp,
+  #picblog small, #picblog strike, #picblog strong, #picblog sub, #picblog sup, #picblog tt, #picblog var,
+  #picblog b, #picblog u, #picblog i, #picblog center,
+  #picblog dl, #picblog dt, #picblog dd, #picblog ol, #picblog ul, #picblog li,
+  #picblog fieldset, #picblog form, #picblog label, #picblog legend,
+  #picblog table, #picblog caption, #picblog tbody, #picblog tfoot, #picblog thead, #picblog tr, #picblog th, #picblog td,
+  #picblog article, #picblog aside, #picblog canvas, #picblog details, #picblog embed,
+  #picblog figure, #picblog figcaption, #picblog footer, #picblog header, #picblog hgroup,
+  #picblog menu, #picblog nav, #picblog output, #picblog ruby, #picblog section, #picblog summary,
+  #picblog time, #picblog mark, #picblog audio, #picblog video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+
+#picblog article, #picblog aside, #picblog details, #picblog figcaption, #picblog figure,
+  #picblog footer, #picblog header, #picblog hgroup, #picblog menu, #picblog nav, #picblog section {
+	display: block;
+}
+
+#picblog body {
+	line-height: 1;
+}
+
+#picblog ol, #picblog ul {
+	list-style: none;
+}
+
+#picblog blockquote, #picblog q {
+	quotes: none;
+}
+
+#picblog blockquote:before, #picblog blockquote:after,
+  #picblog q:before, #picblog q:after {
+	content: '';
+	content: none;
+}
+
+#picblog table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}

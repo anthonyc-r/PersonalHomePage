@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="author" content="Anthony Cohn-Richardby">
+  <title>Home</title>
+  <link rel="stylesheet" type="text/css" href="../../style.css">
+  <link rel="stylesheet" type="text/css" href="prism.css">
+  <script src="prism.js"></script>
+</head>
+
+
+<body>
+<!-- Wrapper -->
+<div id="wrapper">
+
+<!-- main banner + sub banner with page name/summary -->
+  <header>
+  <!-- Nav: Degree info/game/contact page/accessibility page -->
+    <nav>
+    <ul>
+	  <li><a href="../../index.html" accesskey="1">Home</a></li>
+	  <li><a href="../index.html" accesskey="2">Projects</a></li>
+	  <li class="current"><a href="index.html" accesskey="3">Text Adventure</a></li>
+	</ul>
+    </nav>
+
+    <h1 id="title">Anthony Cohn-Richardby <br/>Former Student at the University of Sheffield <br/>In Computer Science</h1>
+    <h1 id="subtitle">Text Adventure</h1>
+    <p><q>Simplicity is the ultimate sophistication.</q> - Leonardo da Vinci</p>
+  </header>
+  
+  
+<!-- article: List of proj uni and personal -->
+  <article>
+    <p>
+	This was my fist attempt at making a game one summer 7 or so years ago, there are only 9 zones you can walk between, arranged in a 3x3 grid. It's fun to look at something you made so long ago.
+	</p>
+	<p>
+	I've included a little video of it here.
+	</p>
+	<video autoplay loop>
+	  <source src="game.webm" type="video/webm">
+	  Video tag not supported, you can still check it out here: <a href="game.webm">video</a>
+	</video>
+    <p><noscript>This page uses prism.js for syntax highlighting, however javascript is currently disabled.</noscript></p>
+    <h1>Main.cpp</h1><a href="src/Main.cpp">source</a>
+	<pre><code class="language-C++">
+#include &lt;iostream>
+#include &lt;cstring>
+#include &lt;cstdlib>
+#include &lt;ctime>
+#include &lt;string>
+
+using namespace std;
+
+string map[3][3];
+int choice;
+int xPos = 1;
+int lastxPos = 1;
+int yPos = 1;
+int lastyPos = 1;
+char name[20];
+int charHealth = 100;
+int charAP = 100;
+int prevCharLevel = 1;
+int charLevel = 1;
+int charExp=100;
+int dangerLevel=1;
+int damage;
+
+string monsName;
+int monsLevel;
+int monsHealth;
+
+int randomInt(int x){
+	srand((unsigned)time(0));
+	int randomInt = (rand()%x)+1;
+	return randomInt;
+}
+
+void playerMove();
+void initBattle();
+
+void updateChar(){
+	charLevel = charExp/100;
+	charAP = charLevel*10;
+}
+
+void healChar(int percent){
+			charHealth = (charLevel*100)*(percent/100);
+}
+
+void updateMap(){
+	if(xPos > 3 || xPos &lt; 1 || yPos > 3 || yPos &lt; 1){
+		cout&lt;&lt;endl&lt;&lt;"It would be silly to go any further in that direction, \nas you have no mountian boots, you step back to the last area."&lt;&lt;endl&lt;&lt;endl;
+		yPos = lastyPos;
+		xPos = lastxPos;
+		updateMap();
+	}
+	else{
+	switch(yPos){
+		case 1:{
+			if(xPos == 1){
+				cout&lt;&lt;endl&lt;&lt;"You enter a bright, grassy area. \nBy the look of things there is no danger. \nYou can see some people in the distance.";
+				dangerLevel = 10;
+			}
+			else if(xPos == 2){
+				cout&lt;&lt;endl&lt;&lt;"The land ahead of you is still very grassy, yet rocks\n are starting to appear, you can sense animals watching";
+				dangerLevel = 20;
+			}
+			else if(xPos == 3){
+				cout&lt;&lt;endl&lt;&lt;"You can see mountians ahead, it would be impossible to go further east \nalso, it feels dangerous here, best not to tarry.";
+				dangerLevel = 30;
+			}
+				break;
+			   }
+		case 2:{
+			if(xPos == 1){
+				cout&lt;&lt;endl&lt;&lt;"You start to see rocks here and there, \nalso you feel the watchful eyes of many animals following you";
+				dangerLevel = 20;
+			}
+			else if(xPos == 2){
+				cout&lt;&lt;endl&lt;&lt;"It seems fairly dangerous here, you can \nfeel something watching you, it's not friendly eather.";
+				dangerLevel = 50;
+			}
+			else if(xPos == 3){
+				cout&lt;&lt;endl&lt;&lt;"These lands are very dangerous \nmountians cover the lands to the east and \n you can see mountians to the distant north";
+				dangerLevel = 75;
+			}
+			   break;
+			   }
+		case 3:{
+			if(xPos == 1){
+				cout&lt;&lt;endl&lt;&lt;"The north is covered in mountians, and the lands ahead seem very \ndangerous, it would be best to avoid staying too long";
+				dangerLevel = 30;
+			}
+			else if(xPos == 2){
+				cout&lt;&lt;endl&lt;&lt;"This is getting very dangerous now, \nnowhere is safe, you can feel the \nnative beings disire to kill. \nTo kill you.";
+				dangerLevel = 75;
+			}
+			else if(xPos == 3){
+				cout&lt;&lt;endl&lt;&lt;"This is it, \nahead lies the very center of the world \nit would not be wise to enter unprepaired";
+				dangerLevel = 120;
+			}
+				break;
+			   }
+		}
+	lastyPos = yPos;
+	lastxPos = xPos;
+	initBattle();
+	}
+}
+
+void showMap(){
+	char *map[3][3];
+	for(int x=1;x&lt;4;x++){
+		for(int y=1;y&lt;4;y++){
+			*map[x][y] = '#';
+		}
+	}
+	*map[xPos][yPos] = '+';
+}
+
+void playerMove(){
+	cout&lt;&lt;endl&lt;&lt;"===================================================================\n===================================================================";
+	cout&lt;&lt;endl&lt;&lt;"Which direction do you want to travel in?"&lt;&lt;endl&lt;&lt;"North(1)? East(2)? South(3)? or West(4)?"&lt;&lt;endl&lt;&lt;"Show Map(5)"&lt;&lt;endl;
+	cin>>choice;
+	switch(choice){
+		case 1:
+			yPos=yPos+1;
+			break;
+		case 2:
+			xPos=xPos+1;
+			break;
+		case 3:
+			yPos=yPos-1;
+			break;
+		case 4:
+			xPos=xPos-1;
+			break;
+		case 5:
+			//showMap();
+			break;
+		default:
+			cout&lt;&lt;"Error reading input"&lt;&lt;endl;
+			playerMove();
+	}
+	updateMap();
+}
+
+void initMonster(){
+	monsLevel = randomInt(charLevel);
+	monsHealth = monsLevel*100-10;
+	switch(monsLevel){
+		case 1:
+			monsName = "Rat";
+			break;
+		case 2:
+			monsName = "Spider";
+			break;
+		case 3:
+			monsName = "Goblin";
+			break;
+		case 4:
+			monsName = "Swordsman";
+			break;
+	}
+}
+void initBattle(){
+	if((randomInt(100)&lt;dangerLevel)&dangerLevel!=120){
+	initMonster();
+	cout&lt;&lt;endl&lt;&lt;"You encountered a monster!"&lt;&lt;endl;
+	cout&lt;&lt;monsName&lt;&lt;" Appeared!"&lt;&lt;endl&lt;&lt;endl;
+	while(monsHealth>0){
+		cout&lt;&lt;"Monster: "&lt;&lt;monsHealth&lt;&lt;endl;
+		cout&lt;&lt;"You: "&lt;&lt;charHealth&lt;&lt;endl&lt;&lt;endl;
+		cout&lt;&lt;"What will you do?"&lt;&lt;endl;
+		cout&lt;&lt;"Attack!(1)"&lt;&lt;endl&lt;&lt;"Cast Spell(2)"&lt;&lt;endl;
+		cin>>choice;
+		switch(choice){
+		case 1:{
+			if(randomInt(100)>10){
+			damage = charLevel*50;
+			monsHealth = monsHealth-damage;
+			cout&lt;&lt;"You do "&lt;&lt;damage&lt;&lt;" damage to the "&lt;&lt;monsName&lt;&lt;"!"&lt;&lt;endl;
+			}
+			else{
+				damage = charLevel*100;
+				monsHealth = monsHealth-damage;
+				cout&lt;&lt;"Its critical strike!"&lt;&lt;endl&lt;&lt;"You do "&lt;&lt;damage&lt;&lt;" to the "&lt;&lt;monsName&lt;&lt;"!"&lt;&lt;endl;
+			}
+			break;
+		}
+		case 2:{
+				damage = charLevel*100;
+				monsHealth = monsHealth-damage;
+				cout&lt;&lt;"You cast a spell."&lt;&lt;" It does "&lt;&lt;damage&lt;&lt;" damage!"&lt;&lt;endl;
+				charAP=charAP-10;
+				break;
+		}
+	}
+		damage=monsLevel*10;
+		charHealth = charHealth-damage;
+		cout&lt;&lt;"The "&lt;&lt;monsName&lt;&lt;" attacks! Dealing "&lt;&lt;damage&lt;&lt;" damage!"&lt;&lt;endl&lt;&lt;endl;
+	}
+	cout&lt;&lt;"You killed the "&lt;&lt;monsName&lt;&lt;"!"&lt;&lt;endl&lt;&lt;endl;
+	charExp = charExp+monsLevel*10;
+	prevCharLevel = charLevel;
+	updateChar();
+	if(charLevel==prevCharLevel+1)
+		cout&lt;&lt;endl&lt;&lt;endl&lt;&lt;"Congratulations!! You just advanced to level "&lt;&lt;charLevel&lt;&lt;"!"&lt;&lt;endl;
+}
+	else if(dangerLevel == 120){
+		cout&lt;&lt;"Are you sure you wish to continue in this direction?\nUp ahead you can see a large ominous mountian \ncloaked in fog and bathing in darkness.\n\nYES(1)\nNO(2)"&lt;&lt;endl;
+		cin>>choice;
+		if(choice == 1){
+			yPos = lastyPos;
+			xPos = lastxPos;
+			updateMap();
+		}
+		else{
+			cout&lt;&lt;"\nYou venture nearer";
+		}
+	}
+	playerMove();
+}
+
+
+	
+int main(){
+    updateChar();
+	playerMove();
+}
+	</pre></code>
+	
+  </article>
+
+ 
+<!--/wrapper-->
+</div>
+<!--footer: author/last updated-->
+<footer>
+    <p>Written and designed by Anthony Cohn-Richardby. Last updated 2016.</p>
+</footer>
+ 
+</body>
+
+
+</html>

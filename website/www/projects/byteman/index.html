@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="author" content="Anthony Cohn-Richardby">
+  <title>Home</title>
+  <link rel="stylesheet" type="text/css" href="../../style.css">
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script type="text/javascript" src="PowerUp.js"></script>
+  <script type="text/javascript" src="Maze.js"></script>
+  <script type="text/javascript" src="Byteman.js"></script>
+  <script type="text/javascript" src="Ghost.js"></script>
+  <script type="text/javascript" src="Game.js"></script>
+  <script type="text/javascript" src="bytemanDraw.js"></script>
+</head>
+
+
+<body>
+<!-- Wrapper -->
+<div id="wrapper">
+
+<!-- main banner + sub banner with page name/summary -->
+  <header>
+  <!-- Nav -->
+    <nav>
+    <ul>
+	  <li><a href="../index.html" accesskey="1">Home</a></li>
+	  <li><a href="../index.html" accesskey="2">Projects</a></li>
+	  <li class="current"><a href="index.html" accesskey="3">Byteman</a></li>
+	</ul>
+    </nav>
+
+    <h1 id="title">Anthony Cohn-Richardby <br/>Former Student at the University of Sheffield <br/>In Computer Science</h1>
+    <h1 id="subtitle">Projects</h1>
+    <p><q>Simplicity is the ultimate sophistication.</q> - Leonardo da Vinci</p>
+  </header>
+  
+  
+<!-- article: game -->
+  <article>
+	<h2>Byteman</h2>
+	<p>Start by drawing your own Byteman, then click save to begin the game. <br/>
+		Score points by eating fruit then eating ghosts, score 8 points to win.</p>
+	<p><noscript>This game requires javascript to work, however it seems you have javascript disabled</noscript></p>
+	<!--Canvas game-->
+    <div id="gameDiv">
+	  <canvas id="game" height="320" width="320"></canvas>
+	  <input type="reset" value="Save" id="save"/>
+	  <input type="reset" value="Clear" id="clear"/>
+    </div>
+	<p class="small">Coded and drawn by Anthony Cohn-Richardby, based upon the original 1980's Pacman game.</p>
+
+  </article>
+
+ 
+<!--/wrapper-->
+</div>
+<!--footer: author/last updated-->
+<footer>
+    <p>Written and designed by Anthony Cohn-Richardby. Last updated 2016.</p>
+</footer>
+ 
+</body>
+
+
+</html>

@@ -1,0 +1,29 @@
+#
+The Analytical Engine has no pretensions whatever to originate anything. It can do whatever we know how to order it to perform... But it is likely to exert an indirect and reciprocal influence on science itself.
+-
+Ada Lovelace /root home/
+#
+Whether gods exist or not, there is no way to get absolute certainty about ethics. Without absolute certainty, what do we do? We do the best we can.
+-
+Richard Stallman /compsci overview/
+#
+An algorithm must be seen to be believed. 
+-
+Donald Knuth /y1/
+#
+... beer results in ideas, which results in new code.
+-
+Theo de Raadt /y2/
+#
+There are two ways of constructing a software design: One way is to make it so simple that there are obviously no deficiencies and the other way is to make it so complicated that there are no obvious deficiencies.
+-
+C. A. R. Hoare /y3/
+#
+XML is like violence: if it doesn't solve your problem, you aren't using enough of it.
+-
+Unknown /projects/
+#
+Simplicity is the ultimate sophistication.
+-
+Leonardo da Vinci
+#
