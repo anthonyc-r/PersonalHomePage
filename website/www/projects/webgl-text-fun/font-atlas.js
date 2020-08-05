@@ -36,7 +36,7 @@ FontAtlas.prototype.init = function(font, charWidth, charHeight, onloaded) {
 
 //returns top left
 FontAtlas.prototype.getCharCoords = function(aChar) {
-	var charCode = String.charCodeAt(aChar);
+	var charCode = aChar.charCodeAt(0);
 	var u = (charCode % NUM_CHARS);
 	var v = (Math.floor(charCode / NUM_CHARS));
 	
